@@ -24,17 +24,40 @@ const router = createRouter({
   routes
 });
 
-router.beforeEach((to, from, next) => {
+router.beforeEach(async (to, from, next) => {
   const token = localStorage.getItem('token');
-  const user = JSON.parse(localStorage.getItem('user') || 'null');
 
   if (to.meta.requiresAuth && !token) {
     next('/login');
-  } else if (to.meta.admin && (!user || !user.is_admin)) {
-    next('/');
-  } else {
-    next();
+    return;
   }
+
+  if (to.meta.admin) {
+    try {
+      const response = await fetch('http://127.0.0.1:8000/api/user', {
+        headers: {
+          'Authorization': `Bearer ${token}`,
+          'Accept': 'application/json'
+        }
+      });
+      
+      if (!response.ok) {
+        next('/login');
+        return;
+      }
+      
+      const user = await response.json();
+      if (!user.is_admin) {
+        next('/');
+        return;
+      }
+    } catch {
+      next('/login');
+      return;
+    }
+  }
+
+  next();
 });
 
 export default router;

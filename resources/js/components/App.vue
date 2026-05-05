@@ -16,10 +16,17 @@
             <router-link to="/schedule" class="hover:text-blue-400">РАСПИСАНИЕ</router-link>
             <router-link to="/contacts" class="hover:text-blue-400">КОНТАКТЫ</router-link>
 
-            <router-link to="/login" class="opacity-70 hover:opacity-100 transition">
-              <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/>
-              </svg>
+            <router-link v-if="!auth.isLoggedIn" to="/login" class="opacity-70 hover:opacity-100 transition" title="Войти">
+                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/>
+                </svg>
+            </router-link>
+            
+            <router-link v-else to="/profile" class="opacity-70 hover:opacity-100 transition flex items-center gap-2" title="Профиль">
+                <span class="hidden md:inline text-sm font-medium">{{ auth.user?.name }}</span>
+                <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 24 24">
+                    <path fill-rule="evenodd" d="M18.685 19.097A9.723 9.723 0 0021.75 12c0-5.385-4.365-9.75-9.75-9.75S2.25 6.615 2.25 12a9.723 9.723 0 003.065 7.097A9.716 9.716 0 0012 21.75a9.716 9.716 0 006.685-2.653zm-12.54-1.285A7.486 7.486 0 0112 15a7.486 7.486 0 015.855 2.812A8.224 8.224 0 0112 20.25a8.224 8.224 0 01-5.855-2.438zM15.75 9a3.75 3.75 0 11-7.5 0 3.75 3.75 0 017.5 0z" clip-rule="evenodd"/>
+                </svg>
             </router-link>
           </div>
         </nav>
@@ -31,3 +38,8 @@
     </div>
   </div>
 </template>
+
+<script setup>
+import { useAuthStore } from '@/stores/auth';
+const auth = useAuthStore();
+</script>

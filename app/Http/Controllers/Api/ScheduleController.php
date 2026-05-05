@@ -29,9 +29,31 @@ class ScheduleController extends Controller
 
     return Schedule::create($data);
 }
-public function book(Request $request) {
-    return response()->json(['message' => 'Записались!']);
-}
+    public function book(Request $request, $id)
+    {
+        $schedule = Schedule::findOrFail($id);
+        
+        $existing = $request->user()->bookings()
+            ->where('schedule_id', $schedule->id)
+            ->first();
+        
+        if ($existing) {
+            return response()->json([
+                'message' => 'Вы уже записаны на это занятие'
+            ], 409);
+        }
+        
+        $booking = $request->user()->bookings()->create([
+            'schedule_id' => $schedule->id,
+        ]);
+        
+        $booking->load('schedule');
+        
+        return response()->json([
+            'message' => 'Вы успешно записаны на занятие',
+            'booking' => $booking
+        ], 201);
+    }
 
     public function destroy($id)
     {
